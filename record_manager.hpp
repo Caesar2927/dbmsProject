@@ -1,0 +1,7 @@
+#pragma once
+#include <string>
+
+class RecordManager {
+public:
+    static void addRecord(const std::string& tableName);
+};
