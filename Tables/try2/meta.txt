@@ -1,2 +1,2 @@
-int id, string name, int age
-id
+in id, string name, int age, int officalid
+id,officialid

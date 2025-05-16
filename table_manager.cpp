@@ -6,6 +6,7 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 
 namespace fs = std::filesystem;
 
@@ -14,8 +15,8 @@ void TableManager::createTable() {
     std::cout << "Enter table name: ";
     std::cin >> tableName;
 
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string schemaInput;
-    std::cin.ignore();
     std::cout << "Enter schema (e.g., int id, string name, int age):\n> ";
     std::getline(std::cin, schemaInput);
 
@@ -24,7 +25,6 @@ void TableManager::createTable() {
     std::getline(std::cin, keys);
 
     std::string tablePath = "Tables/" + tableName;
-
     if (fs::exists(tablePath)) {
         std::cout << "Table already exists.\n";
         return;
@@ -34,36 +34,50 @@ void TableManager::createTable() {
     Schema schema(schemaInput, keys);
     schema.saveToFile(tablePath + "/meta.txt");
 
-    std::ofstream data(tablePath + "/data.tbl", std::ios::binary); // create file
+    // Create an empty data file
+    std::ofstream data(tablePath + "/data.tbl", std::ios::binary);
+    data.close();
 
-    IndexManager indexManager(tableName, tablePath);
-    indexManager.loadIndexes(schema.getUniqueKeys());  // initialize empty trees
-    indexManager.saveIndexes();  // save empty index files
+    // Initialize empty indexes
+    IndexManager idx(tableName, tablePath);
+    idx.loadIndexes(schema.getUniqueKeys());
+    idx.saveIndexes();
 
-    std::cout << "Table created successfully.\n";
+    std::cout << "Table '" << tableName << "' created successfully.\n";
 }
 
 void TableManager::useTable() {
     std::string tableName;
     std::cout << "Enter table name to use: ";
     std::cin >> tableName;
-    std::string tablePath = "Tables/" + tableName;
 
+    std::string tablePath = "Tables/" + tableName;
     if (!fs::exists(tablePath)) {
         std::cout << "Table not found.\n";
         return;
     }
 
     while (true) {
-        std::cout << "\nUsing table: " << tableName << "\n";
-        std::cout << "1. Add Record\n2. Exit\nEnter choice: ";
+        std::cout << "\n--- Table: " << tableName << " ---\n"
+            << "1. Add Record\n"
+            << "2. Find Record\n"
+            << "3. Exit\n"
+            << "Enter choice: ";
         int choice;
         std::cin >> choice;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
         if (choice == 1) {
             RecordManager::addRecord(tableName);
         }
-        else {
+        else if (choice == 2) {
+            RecordManager::findRecord(tableName);
+        }
+        else if (choice == 3) {
             break;
+        }
+        else {
+            std::cout << "Invalid choice. Please try again.\n";
         }
     }
 }
@@ -72,6 +86,7 @@ void TableManager::deleteTable() {
     std::string tableName;
     std::cout << "Enter table name to delete: ";
     std::cin >> tableName;
+
     fs::remove_all("Tables/" + tableName);
-    std::cout << "Table deleted.\n";
+    std::cout << "Table '" << tableName << "' deleted.\n";
 }

@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bplustree.cpp" />
     <ClCompile Include="dbms.cpp" />
     <ClCompile Include="index_manager.cpp" />
     <ClCompile Include="record_manager.cpp" />
@@ -136,6 +137,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bplustree.hpp" />
     <ClInclude Include="index_manager.hpp" />
     <ClInclude Include="record_manager.hpp" />
     <ClInclude Include="schema.hpp" />

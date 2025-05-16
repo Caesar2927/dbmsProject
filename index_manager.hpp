@@ -1,24 +1,26 @@
-#pragma once
+﻿#pragma once
 #include <string>
-#include <unordered_map>
-#include <map>
 #include <vector>
-
-struct IndexEntry {
-    std::string key;
-    long offset; // Byte offset in the .tbl file
-};
+#include <unordered_map>
+#include "bplustree.hpp"
 
 class IndexManager {
-private:
-    std::unordered_map<std::string, std::map<std::string, long>> indexes;
-    std::string tableName;
-    std::string tablePath;
-
 public:
-    IndexManager(const std::string& name, const std::string& path);
-    bool existsInIndex(const std::string& fieldName, const std::string& key);
+    IndexManager(const std::string& tableName, const std::string& tablePath);
+    ~IndexManager();
+
     void loadIndexes(const std::vector<std::string>& uniqueFields);
     void insertIntoIndex(const std::string& fieldName, const std::string& key, long offset);
-    void saveIndexes();
+    bool existsInIndex(const std::string& fieldName, const std::string& key);
+    void saveIndexes();  // no-op, BPlusTree persists on insert
+    long getOffset(const std::string& fieldName, const std::string& key);
+    long searchIndex(const std::string& fieldName,
+        const std::string& key);
+
+
+
+private:
+    std::string tableName;
+    std::string tablePath;
+    std::unordered_map<std::string, BPlusTree*> trees;
 };

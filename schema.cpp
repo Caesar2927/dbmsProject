@@ -48,5 +48,7 @@ std::vector<Schema::Field> Schema::getFields() const {
 }
 
 std::vector<std::string> Schema::getUniqueKeys() const {
+   // std::cout << "returining unique keys" << std::endl;
+   // for (auto e : uniqueKeys) std::cout << e << std::endl;
     return uniqueKeys;
 }
